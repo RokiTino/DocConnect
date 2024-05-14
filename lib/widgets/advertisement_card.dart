@@ -126,21 +126,22 @@ class AdvertisementCard extends StatelessWidget {
                         ),),
                           ],
                         )),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: InkWell(
-                            onTap: () {},
-                            child: const Icon(
-                              Icons.close_outlined,
-                              color: Colors.white,
-                              size: 15,
-                            ),
-                          )
-                        )
+
                       ],
                     ),
                   ),
+                ),
+                Positioned(
+                    top: 10,
+                    right: 10,
+                    child: InkWell(
+                      onTap: () {},
+                      child: const Icon(
+                        Icons.close_outlined,
+                        color: Colors.white,
+                        size: 15,
+                      ),
+                    )
                 ),
               ],
             ),
