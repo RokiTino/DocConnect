@@ -1,13 +1,9 @@
-import 'package:docconnect/screens/Calendar.dart';
-import 'package:docconnect/screens/Profile.dart';
+
 import 'package:docconnect/widgets/advertisement_card.dart';
 import 'package:docconnect/widgets/presentation/categories.dart';
 import 'package:docconnect/widgets/presentation/doctorList.dart';
 import 'package:docconnect/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
-
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
 import '../widgets/bottom_nav.dart';
 import 'Doctors.dart';
 
