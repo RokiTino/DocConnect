@@ -1,7 +1,15 @@
+import 'package:docconnect/screens/Calendar.dart';
+import 'package:docconnect/screens/Profile.dart';
 import 'package:docconnect/widgets/advertisement_card.dart';
-import 'package:docconnect/widgets/categories.dart';
+import 'package:docconnect/widgets/presentation/categories.dart';
+import 'package:docconnect/widgets/presentation/doctorList.dart';
 import 'package:docconnect/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
+
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+
+import '../widgets/bottom_nav.dart';
+import 'Doctors.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -115,16 +123,12 @@ class _HomeState extends State<Home> {
                                 animator();
                                 setState(() {
                                 });
-                                // Timer(Duration(seconds: 1),() {
-                                //   Navigator.push(context, MaterialPageRoute(builder: (context) => SeeAll(),));
-                                //   animator();
-                                // },);
                                 await Future.delayed(const Duration(milliseconds: 500));
-                                // await Navigator.push(context, MaterialPageRoute(builder:  (context) {
-                                //   return SeeAll();
-                                // },
-                                // ),
-                                // );
+                                await Navigator.push(context, MaterialPageRoute(builder:  (context) {
+                                  return Doctors();
+                                },
+                                ),
+                                );
 
                                 setState(() {
                                   animator();
@@ -137,6 +141,8 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   )),
+              Doctorlist(position, opacity),
+              CustomBottomNavigation(opacity,position)
             ],
           ),
         ),

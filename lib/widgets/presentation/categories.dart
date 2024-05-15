@@ -1,4 +1,4 @@
-import 'package:docconnect/widgets/category.dart';
+import 'package:docconnect/widgets/presentation/category.dart';
 import 'package:flutter/material.dart';
 
 class Categories extends StatelessWidget {
