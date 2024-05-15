@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:docconnect/widgets/presentation/app_bar.dart';
 
+import '../widgets/bottom_nav.dart';
+
 class Calendar extends StatefulWidget {
   int index=0;
   Calendar(this.index, {super.key});
@@ -304,7 +306,7 @@ class _CalendarState extends State<Calendar> {
                               ],
                             )),
                         Positioned(
-                          bottom: 10,
+                          bottom: 150,
                           left: 30,
                           right: 30,
                           child: InkWell(
@@ -499,7 +501,9 @@ class _CalendarState extends State<Calendar> {
                               ),
                             ),
                           ),
-                        )
+                        ),
+
+                        CustomBottomNavigation(opacity,animate)
                       ],
                     ),
                   ),

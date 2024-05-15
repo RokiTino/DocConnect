@@ -24,7 +24,7 @@ class Doctorlist extends StatelessWidget {
             opacity: opacity,
             duration: const Duration(milliseconds: 300),
             child: SizedBox(
-              height: 270,
+              height: 350,
               width: MediaQuery.of(context).size.width,
               child: SingleChildScrollView(
                 child:

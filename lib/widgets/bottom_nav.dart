@@ -9,7 +9,7 @@ class CustomBottomNavigation extends StatelessWidget {
 
   final bool position;
   final double opacity;
-  const CustomBottomNavigation(this.opacity,this.position,{super.key});
+  CustomBottomNavigation(this.opacity,this.position,{super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class CustomBottomNavigation extends StatelessWidget {
         duration: const Duration(milliseconds: 400),
         opacity: opacity,
         child: CurvedNavigationBar(
-          backgroundColor: Colors.blue,
+          // backgroundColor: Colors.blue,
           items: [
             InkWell(onTap: (){
               Navigator.pushReplacement(context,

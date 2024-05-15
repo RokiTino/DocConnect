@@ -1,4 +1,5 @@
 import 'package:docconnect/screens/Chat.dart';
+import 'package:docconnect/widgets/bottom_nav.dart';
 import 'package:docconnect/widgets/presentation/app_bar.dart';
 import 'package:docconnect/widgets/presentation/find_doctor.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +95,7 @@ class _DoctorsState extends State<Doctors> {
                   ),
                 )),
             AnimatedPositioned(
-                top: position ? 430 : 500,
+                top: position ? 420 : 550,
                 left: 20,
                 right: 20,
                 duration: Duration(milliseconds: 500),
@@ -102,7 +103,7 @@ class _DoctorsState extends State<Doctors> {
                     duration: const Duration(milliseconds: 500),
                     opacity: opacity,
                     child: Container(
-                      height: 350,
+                      height: 450,
                       child: ListView.builder(
                         itemCount: 7,
                         itemBuilder:
@@ -201,7 +202,9 @@ class _DoctorsState extends State<Doctors> {
                           ),
                         ),),
                     )
-                )),
+                ),
+            ),
+            CustomBottomNavigation(opacity, position)
           ],
         ),
       ),
