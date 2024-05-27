@@ -97,7 +97,7 @@ class _SplashState extends State<Splash> {
                   });
                   Timer(const Duration(milliseconds: 400),() {
                     Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => Home(), ));
+                        MaterialPageRoute(builder: (context) => const Home(), ));
                   });
                 },
                 child: AnimatedOpacity(

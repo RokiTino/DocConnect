@@ -114,14 +114,14 @@ class _HomeState extends State<Home> {
                         children: [
                           TextWidget("Our Doctors", 25, Colors.black.withOpacity(.8), FontWeight.bold,letterSpace: 0,),
                           InkWell(
-                              onTap: () async
+                              onTap: ()
                               {
                                 animator();
                                 setState(() {
                                 });
-                                await Future.delayed(const Duration(milliseconds: 500));
-                                await Navigator.push(context, MaterialPageRoute(builder:  (context) {
-                                  return Doctors();
+                                Future.delayed(const Duration(milliseconds: 500));
+                                Navigator.push(context, MaterialPageRoute(builder:  (context) {
+                                  return const Doctors();
                                 },
                                 ),
                                 );
