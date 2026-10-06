@@ -131,6 +131,7 @@ class _CareHomeState extends State<CareHome> {
   final client = Supabase.instance.client;
   List<Map<String, dynamic>> appointments = [];
   List<Map<String, dynamic>> notifications = [];
+  List<Map<String, dynamic>> careRequests = [];
   Map<String, String> doctors = {};
   Timer? timer;
   bool loading = true;
@@ -177,6 +178,12 @@ class _CareHomeState extends State<CareHome> {
           .select()
           .eq('patient_id', uid)
           .order('created_at', ascending: false);
+      final requests = await client
+          .from('care_link_requests')
+          .select('id,doctor_id,status,created_at')
+          .eq('patient_id', uid)
+          .eq('status', 'pending')
+          .order('created_at', ascending: false);
       final people = await client
           .from('care_people')
           .select('id,display_name')
@@ -185,6 +192,7 @@ class _CareHomeState extends State<CareHome> {
         setState(() {
           appointments = rows;
           notifications = inbox;
+          careRequests = requests;
           doctors = {
             for (final p in people)
               p['id'] as String: p['display_name'] as String
@@ -217,6 +225,41 @@ class _CareHomeState extends State<CareHome> {
     } catch (_) {
       if (mounted) {
         setState(() => error = 'Could not mark notification as read.');
+      }
+    }
+  }
+
+  Future<void> answerCareRequest(String id, bool approve) async {
+    if (approve) {
+      final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+                title: const Text('Connect with this doctor?'),
+                content: const Text(
+                    'Approving lets this doctor see your appointments and checkup summaries, and book specialist care for you.'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('Cancel')),
+                  FilledButton(
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                      child: const Text('Approve')),
+                ],
+              ));
+      if (confirmed != true) return;
+    }
+    try {
+      final changed = await client
+          .from('care_link_requests')
+          .update({'status': approve ? 'accepted' : 'declined'})
+          .eq('id', id)
+          .eq('status', 'pending')
+          .select('id');
+      if (changed.isEmpty) throw StateError('Care request was not updated');
+      await refresh();
+    } catch (_) {
+      if (mounted) {
+        setState(() => error = 'Could not answer the care request. Try again.');
       }
     }
   }
@@ -342,7 +385,13 @@ class _CareHomeState extends State<CareHome> {
                       label: Text('$unread'),
                       isLabelVisible: unread > 0,
                       child: const Icon(Icons.notifications_outlined)),
-                  label: 'Notifications')
+                  label: 'Notifications'),
+              NavigationDestination(
+                  icon: Badge(
+                      label: Text('${careRequests.length}'),
+                      isLabelVisible: careRequests.isNotEmpty,
+                      child: const Icon(Icons.people_outline)),
+                  label: 'Care team')
             ]),
         body: loading
             ? const Center(child: CircularProgressIndicator())
@@ -356,7 +405,8 @@ class _CareHomeState extends State<CareHome> {
                           [
                             'Your upcoming care',
                             'Your checkup history',
-                            'Your notifications'
+                            'Your notifications',
+                            'Your care team'
                           ][tab],
                           style: const TextStyle(
                               fontSize: 28, fontWeight: FontWeight.bold)),
@@ -379,7 +429,39 @@ class _CareHomeState extends State<CareHome> {
                                 padding: EdgeInsets.all(20),
                                 child: Text(
                                     'Your patient account is not active yet. Ask your clinic administrator to connect your account.')))
-                      else if (tab == 2) ...[
+                      else if (tab == 3) ...[
+                        if (careRequests.isEmpty)
+                          const Text(
+                              'No care-team requests are waiting for your approval.'),
+                        ...careRequests.map((request) => Card(
+                            child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          doctors[request['doctor_id']] ??
+                                              'Doctor',
+                                          style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600)),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                          'This doctor is asking to join your care team.'),
+                                      const SizedBox(height: 12),
+                                      Wrap(spacing: 8, children: [
+                                        FilledButton(
+                                            onPressed: () => answerCareRequest(
+                                                request['id'] as String, true),
+                                            child: const Text('Approve')),
+                                        OutlinedButton(
+                                            onPressed: () => answerCareRequest(
+                                                request['id'] as String, false),
+                                            child: const Text('Decline'))
+                                      ])
+                                    ])))),
+                      ] else if (tab == 2) ...[
                         if (notifications.isEmpty)
                           const Text(
                               'You’re all caught up. Appointment updates and reminders will appear here.'),
