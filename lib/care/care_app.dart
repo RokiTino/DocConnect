@@ -221,6 +221,79 @@ class _CareHomeState extends State<CareHome> {
     }
   }
 
+  Future<void> setPassword() async {
+    final password = TextEditingController();
+    bool saving = false;
+    String? message;
+    try {
+      await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => StatefulBuilder(
+              builder: (dialogContext, setDialogState) => AlertDialog(
+                    title: const Text('Set your password'),
+                    content: Column(mainAxisSize: MainAxisSize.min, children: [
+                      const Text(
+                          'Use this password to sign in to DocConnect after accepting your invitation.'),
+                      const SizedBox(height: 16),
+                      TextField(
+                          controller: password,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                              labelText: 'New password',
+                              border: OutlineInputBorder())),
+                      if (message != null)
+                        Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Text(message!,
+                                style: const TextStyle(color: Colors.red)))
+                    ]),
+                    actions: [
+                      TextButton(
+                          onPressed: saving
+                              ? null
+                              : () => Navigator.pop(dialogContext),
+                          child: const Text('Cancel')),
+                      FilledButton(
+                          onPressed: saving
+                              ? null
+                              : () async {
+                                  if (password.text.length < 8) {
+                                    setDialogState(() =>
+                                        message = 'Use at least 8 characters.');
+                                    return;
+                                  }
+                                  setDialogState(() {
+                                    saving = true;
+                                    message = null;
+                                  });
+                                  try {
+                                    await client.auth.updateUser(UserAttributes(
+                                        password: password.text));
+                                    if (dialogContext.mounted) {
+                                      Navigator.pop(dialogContext);
+                                    }
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content:
+                                                  Text('Password saved.')));
+                                    }
+                                  } catch (_) {
+                                    setDialogState(() {
+                                      saving = false;
+                                      message =
+                                          'Could not save your password. Please try again.';
+                                    });
+                                  }
+                                },
+                          child: Text(saving ? 'Saving…' : 'Save password'))
+                    ],
+                  )));
+    } finally {
+      password.dispose();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final rows = appointments
@@ -235,6 +308,10 @@ class _CareHomeState extends State<CareHome> {
     final unread = notifications.where((n) => n['read_at'] == null).length;
     return Scaffold(
         appBar: AppBar(title: const Text('DocConnect'), actions: [
+          IconButton(
+              tooltip: 'Set password',
+              onPressed: setPassword,
+              icon: const Icon(Icons.lock_outline)),
           IconButton(
               tooltip: 'Refresh',
               onPressed: refresh,
@@ -285,6 +362,9 @@ class _CareHomeState extends State<CareHome> {
                               fontSize: 28, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       const Text('Connected to your doctors through Zoctor.'),
+                      const SizedBox(height: 8),
+                      const Text(
+                          'Newly invited? Use the lock icon above to set your password.'),
                       const SizedBox(height: 24),
                       if (error != null)
                         Card(
